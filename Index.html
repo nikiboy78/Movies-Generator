@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blogger Code Generator (TMDb)</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1a1a1a;
+      color: #fff;
+      padding: 20px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px 0;
+      width: 100%;
+      max-width: 400px;
+    }
+    textarea {
+      width: 100%;
+      height: 300px;
+      padding: 10px;
+      font-size: 14px;
+      background: #000;
+      color: #0f0;
+    }
+    .output {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Blogger HTML Generator</h1>
+  <p>Enter movie name:</p>
+  <input type="text" id="movieName" placeholder="e.g. Top Gun">
+  <button onclick="generateCode()">Generate Blogger Code</button>
+  <div class="output">
+    <h3>Generated HTML:</h3>
+    <textarea id="outputCode" readonly></textarea>
+  </div>
+
+  <script>
+    async function generateCode() {
+      const apiKey = '32ffd7aad545aaf4e56fa49c4fc0120b'; // Replace with your TMDb API key
+      const query = document.getElementById('movieName').value;
+      const url = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}`;
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        const movie = data.results[0];
+
+        if (!movie) {
+          document.getElementById('outputCode').value = 'Movie not found.';
+          return;
+        }
+
+        const posterUrl = `https://image.tmdb.org/t/p/w600_and_h900_bestv2${movie.poster_path}`;
+        const html = `<!-- Blogger Movie Template -->\n<div class="movie-card">\n  <h2>🎬 ${movie.title} (${movie.release_date?.slice(0, 4)})</h2>\n  <img src="${posterUrl}" alt="${movie.title} Poster" style="width:100%; max-width:300px; border-radius:10px;">\n  <p><strong>📖 Overview:</strong> ${movie.overview}</p>\n</div>`;
+
+        document.getElementById('outputCode').value = html;
+      } catch (err) {
+        document.getElementById('outputCode').value = 'Error fetching data.';
+      }
+    }
+  </script>
+</body>
+</html>
